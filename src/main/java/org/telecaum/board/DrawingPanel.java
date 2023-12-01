@@ -14,14 +14,13 @@ public class DrawingPanel extends JPanel implements ActionListener, MouseListene
 
     Point firstPointer = new Point(0, 0);
     Point secondPointer = new Point(0, 0);
-    Float stroke = (float) 5;
-
-    int width;
-    int height;
-    int minPointx;
-    int minPointy;
+    private Color customColor;
+    private Float stroke;
 
     DrawingPanel(){
+        customColor = new Color(0,0,0,255);
+        stroke = (float) 5;
+
         penButton.addActionListener(this);
         penButton.setSize(80,80);
         eraseButton.addActionListener(this);
@@ -48,18 +47,11 @@ public class DrawingPanel extends JPanel implements ActionListener, MouseListene
     }
 
     public void updatePaint() {
-
-        width = Math.abs(secondPointer.x - firstPointer.x);
-        height = Math.abs(secondPointer.y - firstPointer.y);
-
-        minPointx = Math.min(firstPointer.x, secondPointer.x);
-        minPointy = Math.min(firstPointer.y, secondPointer.y);
-
         Graphics2D g = image.createGraphics();
 
         switch (shapeString) {
             case ("그리기"):
-                g.setColor(Color.black);
+                g.setColor(customColor);
                 g.setStroke(new BasicStroke(stroke));
                 g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
                 break;
@@ -73,6 +65,13 @@ public class DrawingPanel extends JPanel implements ActionListener, MouseListene
         }
         g.dispose();
         repaint();
+    }
+
+    public void changeColor(Color customColor){
+        this.customColor = customColor;
+    }
+    public void setStrokeSize(float size){
+        this.stroke = size;
     }
 
     @Override
@@ -105,12 +104,6 @@ public class DrawingPanel extends JPanel implements ActionListener, MouseListene
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        width = Math.abs(secondPointer.x - firstPointer.x);
-        height = Math.abs(secondPointer.y - firstPointer.y);
-
-        minPointx = Math.min(firstPointer.x, secondPointer.x);
-        minPointy = Math.min(firstPointer.y, secondPointer.y);
-
         if (secondPointer.x != 0 && secondPointer.y != 0) {
             firstPointer.x = secondPointer.x;
             firstPointer.y = secondPointer.y;

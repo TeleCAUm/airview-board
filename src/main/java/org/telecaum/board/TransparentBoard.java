@@ -9,8 +9,10 @@ import java.util.ArrayList;
 public class TransparentBoard extends JFrame {
     private boolean isVisible = true;
     private DrawingPanel panel;
+    private ButtonPanel buttonpanel;
     private Box buttonBox;
-    private Box toolBox;
+    private Color customColor;
+    private Float stroke;
 
     private ImageIcon onImgIcon = new ImageIcon("./img/on.png");
     private ImageIcon offImgIcon = new ImageIcon("./img/off.png");
@@ -28,11 +30,14 @@ public class TransparentBoard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        customColor = new Color(0,0,0,255);
+        stroke = (float) 5;
 
         setUndecorated(true);       // 프레임 투명도 설정
         setBackground(new Color(0, 0, 0, 0));
 
         panel = new DrawingPanel();
+        buttonpanel = new ButtonPanel(panel);
         panel.setOpaque(false);  // 패널 투명도 설정
 
         Image onOriginal = onImgIcon.getImage();
@@ -42,34 +47,21 @@ public class TransparentBoard extends JFrame {
 
         toggleButton = new JButton(new ImageIcon(onImg));
         toggleButton.setPreferredSize(new Dimension(40, 20));
-
         toggleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panelToggling();
             }
         });
+        buttonBox = new Box(BoxLayout.X_AXIS);
 
-        buttonBox = new Box(BoxLayout.Y_AXIS);
-        Box b1 = Box.createHorizontalBox();
-        b1.add(Box.createHorizontalGlue());
-        b1.add(panel.penButton);
-        b1.add(Box.createHorizontalGlue());
-
-        Box b2 = Box.createHorizontalBox();
-        b2.add(Box.createHorizontalGlue());
-        b2.add(panel.eraseButton);
-        b2.add(Box.createHorizontalGlue());
-
-        toolBox = new Box(BoxLayout.Y_AXIS);
-        toolBox.add(b1);
-        toolBox.add(b2);
-
-        buttonBox.add(Box.createVerticalStrut(250));
+//        buttonBox.add(Box.createVerticalStrut(200));  // set the verticalstrut as 200
         buttonBox.add(toggleButton);
-        buttonBox.add(toolBox);
+        buttonBox.add(buttonpanel.buttonPanel);
 
-        add(buttonBox, BorderLayout.WEST);
+//        add(buttonBox, BorderLayout.NORTH);
+        buttonBox.setBounds((res.width/2)-200, 50, 500 , 50);
+        add(buttonBox);
         add(panel, BorderLayout.CENTER);
         setVisible(true);
     }
@@ -77,11 +69,10 @@ public class TransparentBoard extends JFrame {
     public void draw(ArrayList<int[]> points) {
         Point firstPointer = new Point(0, 0);
         Point secondPointer = new Point(0, 0);
-        Float stroke = (float) 5;
 
         Graphics2D g = panel.getBufferedImage().createGraphics();
 
-        g.setColor(Color.black);
+        g.setColor(customColor);
         g.setStroke(new BasicStroke(stroke));
         int[] first = points.get(0);
         firstPointer.setLocation(first[0], first[1]);
@@ -98,7 +89,7 @@ public class TransparentBoard extends JFrame {
         repaint();
     }
 
-    private void panelToggling() {
+    public void panelToggling() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("mac")) {
             // Minimize the window on Mac
@@ -107,11 +98,11 @@ public class TransparentBoard extends JFrame {
             if (isVisible) {
                 toggleButton.setIcon(new ImageIcon(offImg));
                 remove(panel);
-                buttonBox.remove(toolBox);
+                buttonBox.remove(buttonpanel.buttonPanel);
             } else {
                 toggleButton.setIcon(new ImageIcon(onImg));
                 add(panel, BorderLayout.CENTER);
-                buttonBox.add(toolBox);
+                buttonBox.add(buttonpanel.buttonPanel);
             }
             isVisible = !isVisible;
             revalidate();

@@ -7,7 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telecaum.board.TransparentBoard;
 
+import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Server {
 
@@ -19,7 +22,7 @@ public class Server {
 
         config = new Configuration();
 
-        config.setHostname("localhost");
+        config.setHostname("127.0.0.1");
         config.setPort(3333);
         config.setOrigin("*");
 
@@ -29,13 +32,34 @@ public class Server {
         server.addDisconnectListener(client -> System.out.println("Client disconnected: " + client.getSessionId()));
 
         // add some listeners
-        server.addEventListener("send", String.class, listenDrawingEvent());
-
+        server.addEventListener("send", String.class, listenConversionDrawingEvent());
 
         server.start();
     }
+    private ArrayList<int[]> conversion(int width, int height, ArrayList<int[]> points){
+        Rectangle r = board.getBounds();
+        int boardWidth = r.width;
+        int boardHeight = r.height;
+        int dataWidth = width;
+        int dataHeight = height;
+        double widthRatio = boardWidth/dataWidth;
+        double heightRatio = boardHeight/dataHeight;
+        ArrayList<int[]> adjustPoints = new ArrayList<>();
 
-    private DataListener<String> listenDrawingEvent() {
+        for(int i=0; i<points.size(); i++){
+            int[] coor = points.get(i);
+            System.out.println("before : " + coor[0] + " " + coor[1]);
+            coor[0] = (int)( coor[0] * widthRatio );
+            coor[1] = (int)( coor[1] * heightRatio );
+            System.out.println("after : " + coor[0] + " " + coor[1]);
+
+            adjustPoints.add(coor);
+        }
+
+        return adjustPoints;
+    }
+
+    private DataListener<String> listenConversionDrawingEvent() {
         return (client, message, ackRequest) -> {
             ArrayList<int[]> points = new ArrayList<>();
 
@@ -52,9 +76,10 @@ public class Server {
                 points.add(coordinates);
             }
 
+            conversion(width, height, points);
             board.draw(points);
 
-            points.clear(); // maybe this is the problem?
+            points.removeAll(points); // maybe this is the problem?
             ackRequest.sendAckData("received and drawed!");
         };
     }
