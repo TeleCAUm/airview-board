@@ -36,28 +36,6 @@ public class Server {
 
         server.start();
     }
-    private ArrayList<int[]> conversion(int width, int height, ArrayList<int[]> points){
-        Rectangle r = board.getBounds();
-        int boardWidth = r.width;
-        int boardHeight = r.height;
-        int dataWidth = width;
-        int dataHeight = height;
-        double widthRatio = boardWidth/dataWidth;
-        double heightRatio = boardHeight/dataHeight;
-        ArrayList<int[]> adjustPoints = new ArrayList<>();
-
-        for(int i=0; i<points.size(); i++){
-            int[] coor = points.get(i);
-            System.out.println("before : " + coor[0] + " " + coor[1]);
-            coor[0] = (int)( coor[0] * widthRatio );
-            coor[1] = (int)( coor[1] * heightRatio );
-            System.out.println("after : " + coor[0] + " " + coor[1]);
-
-            adjustPoints.add(coor);
-        }
-
-        return adjustPoints;
-    }
 
     private DataListener<String> listenConversionDrawingEvent() {
         return (client, message, ackRequest) -> {
@@ -76,13 +54,10 @@ public class Server {
                 points.add(coordinates);
             }
 
-            conversion(width, height, points);
-            board.draw(points);
+            board.draw(width, height, points);
 
-            points.removeAll(points); // maybe this is the problem?
+            points.removeAll(points);
             ackRequest.sendAckData("received and drawed!");
         };
     }
-
-
 }

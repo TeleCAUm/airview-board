@@ -66,24 +66,29 @@ public class ButtonPanel implements ActionListener {
         if (e.getSource().equals(pen)) {
             Color black = new Color(0,0,0,255);
             drawingPanel.changeColor(black);
+            drawingPanel.changeToErase(false);
         } else if (e.getSource().equals(erase)) {
-            Color transparent = new Color (0,0,0, 10);
-            drawingPanel.changeColor(transparent);
+            drawingPanel.changeToErase(true);
         } else if (e.getSource().equals(changeColor)) {
             Color chageColor = new Color(255,0,0,255);
             drawingPanel.changeColor(chageColor);
+            drawingPanel.changeToErase(false);
         } else if (e.getSource().equals(setStrokSize)) {
             if(!flag){
                 drawingPanel.setStrokeSize((float) 5);
+                drawingPanel.changeToErase(false);
                 flag = true;
             }
             else{
+                drawingPanel.changeToErase(false);
                 drawingPanel.setStrokeSize((float) 30);
                 flag = false;
             }
         } else if (e.getSource().equals(eraseAll)) {
+            drawingPanel.eraseAll();
             drawingPanel.setImageBackground();
             drawingPanel.repaint();
+            drawingPanel.changeToErase(true);
         }
     }
 }

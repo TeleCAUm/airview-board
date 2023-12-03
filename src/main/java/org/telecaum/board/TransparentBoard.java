@@ -13,12 +13,12 @@ public class TransparentBoard extends JFrame {
     private Box buttonBox;
     private Color customColor;
     private Float stroke;
-
     private ImageIcon onImgIcon = new ImageIcon("./img/on.png");
     private ImageIcon offImgIcon = new ImageIcon("./img/off.png");
     private Image onImg;
     private Image offImg;
     private JButton toggleButton;
+    private ArrayList<Point> line;
 
     public TransparentBoard() {
         init();
@@ -66,23 +66,45 @@ public class TransparentBoard extends JFrame {
         setVisible(true);
     }
 
-    public void draw(ArrayList<int[]> points) {
+    private ArrayList<Point> conversion(int width, int height, ArrayList<int[]> points){
+        Rectangle r = this.getBounds();
+        int boardWidth = r.width;
+        int boardHeight = r.height;
+        int dataWidth = width;
+        int dataHeight = height;
+        double widthRatio = boardWidth/dataWidth;
+        double heightRatio = boardHeight/dataHeight;
+        ArrayList<Point> adjustPoints = new ArrayList<>();
+        Point adjustPoint;
+
+        for(int i=0; i<points.size(); i++){
+            int[] coor = points.get(i);
+            coor[0] = (int)( coor[0] * widthRatio );
+            coor[1] = (int)( coor[1] * heightRatio );
+            adjustPoint = new Point(coor[0], coor[1]);
+
+            adjustPoints.add(adjustPoint);
+        }
+
+        return adjustPoints;
+    }
+
+    public void draw(int width, int height, ArrayList<int[]> points) {
         Point firstPointer = new Point(0, 0);
         Point secondPointer = new Point(0, 0);
 
-        Graphics2D g = panel.getBufferedImage().createGraphics();
+        line = conversion(width, height, points);      // adjust ratio comparing Participant board's size and Host board's size
 
+        Graphics2D g = panel.getBufferedImage().createGraphics();
         g.setColor(customColor);
-        g.setStroke(new BasicStroke(stroke));
-        int[] first = points.get(0);
-        firstPointer.setLocation(first[0], first[1]);
+        g.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+        firstPointer = line.get(0);
+
 
         for (int i = 1; i < points.size(); i++) {
-            int[] second = points.get(i);
-            secondPointer.setLocation(second[0], second[1]);
+            secondPointer = line.get(i);
             g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
-            firstPointer.x = secondPointer.x;
-            firstPointer.y = secondPointer.y;
+            firstPointer = secondPointer;
         }
 
         g.dispose();
