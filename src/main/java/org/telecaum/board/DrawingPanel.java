@@ -6,10 +6,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import static java.lang.Math.min;
-
-
 // 그림판 패널
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener {
     private BufferedImage image;
@@ -66,10 +62,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(image, 0, 0, null);
-//        g.dispose();
-//        Graphics2D g2d = (Graphics2D) g;
-//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
     }
 
     public void eraseAll(){
@@ -145,15 +137,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
             temp.add(coor);
         }
         else{
-//            Iterator<Line> iterator1 = lines.iterator();
-//            while(iterator1.hasNext()){
-//                Line line = iterator1.next();
-//                int flag = isInside(line.multipleLine, e.getPoint());
-//                if(flag == 40);{
-//                    line.isSelected = true;
-//                }
-//            }
-
             for(int i=0; i<lines.size(); i++){
                 Line line = lines.get(i);
                 if(isInside(line.multipleLine, e.getPoint()))
@@ -169,12 +152,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
                     iterator2.remove();
                 }
             }
-//            for(int i=0; i<lines.size(); i++){
-//                Line line = lines.get(i);
-//                if(line.isSelected == true) {
-//                    removeAndDraw();
-//                }
-//            }
         }
     }
     /**
@@ -194,37 +171,10 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
                 startPoint = endPoint;
             }
 
-            if(minimum < 40.0)
+            if(minimum < 5.0)
                 return true;
         }
         return false;
-
-//        Iterator<int[]> iterator = checkSeletectedLine.iterator();
-//        int[] startPoint = iterator.next();
-//        int[] endPoint;
-//        int i =0;
-//        while (iterator.hasNext()) {
-//            endPoint = iterator.next();
-//            i++;
-////            double distance = pointToLineDistance(startPoint[0], startPoint[1], endPoint[0], endPoint[1], p.x,p.y);
-////            System.out.println("( " + startPoint[0] + ", "+startPoint[1]+" ) ( " +endPoint[0] + ", "+ endPoint[1] + " ) ~ ( " + p.x + ", "+ p.y+" ) : "+ distance);
-////            if(distance < 5){
-////                return true;
-////            }
-////            startPoint = endPoint;
-//
-//
-//            // if the distance between point p and one of the lines is less than 5, let both are same && return true
-//            double distance = 0xfffffff;
-//
-//            distance = Math.min(Math.sqrt(new Line2D.Double(startPoint[0], startPoint[1], endPoint[0], endPoint[1]).ptSegDist(p.x, p.y)), distance);
-//            System.out.println(i + " : " + distance);
-//            if (distance < 40.0) {
-//                return true;
-//            }
-//            startPoint = endPoint;
-//        }
-//        return false;
     }
     /**
      * Calculates the distance from a point (x, y) to the line segment defined by (x1, y1) and (x2, y2).
@@ -255,18 +205,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
         double dx = x - xx;
         double dy = y - yy;
         return Math.sqrt(dx * dx + dy * dy);
-
-//            float A = x - x1; // position of point rel one end of line
-//            float B = y - y1;
-//            float C = x2 - x1; // vector along line
-//            float D = y2 - y1;
-//            float E = -D; // orthogonal vector
-//            float F = C;
-//
-//            float dot = A * E + B * F;
-//            float len_sq = E * E + F * F;
-//
-//            return (float) Math.abs(dot) / Math.sqrt(len_sq);
     }
 
     @Override
@@ -291,14 +229,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
             int[] coor = { secondPointer.x, secondPointer.y };
             temp.add(coor);
             ArrayList<int[]> line = new ArrayList<>(temp);
-
-            Iterator<int[]> iter= temp.iterator();
-            while(iter.hasNext()){
-                int[] point = iter.next();
-                System.out.println("( " + point[0]+", "+point[1]+" ), " + customColor  +",  "+ stroke);
-            }
             lines.add(new Line(line, customColor, stroke));
-            System.out.println("--------------------added----------------------------");
 
             updatePaint();
             temp.clear();

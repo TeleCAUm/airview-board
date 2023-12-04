@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
 public class TransparentBoard extends JFrame {
@@ -18,7 +19,7 @@ public class TransparentBoard extends JFrame {
     private Image onImg;
     private Image offImg;
     private JButton toggleButton;
-    private ArrayList<Point> line;
+    private ArrayList<int[]> line;
 
     public TransparentBoard() {
         init();
@@ -54,19 +55,22 @@ public class TransparentBoard extends JFrame {
             }
         });
         buttonBox = new Box(BoxLayout.X_AXIS);
-
-//        buttonBox.add(Box.createVerticalStrut(200));  // set the verticalstrut as 200
         buttonBox.add(toggleButton);
         buttonBox.add(buttonpanel.buttonPanel);
-
-//        add(buttonBox, BorderLayout.NORTH);
-        buttonBox.setBounds((res.width/2)-200, 50, 500 , 50);
+        buttonBox.setBounds(100, 50, 1000 , 200);
         add(buttonBox);
         add(panel, BorderLayout.CENTER);
         setVisible(true);
     }
 
-    private ArrayList<Point> conversion(int width, int height, ArrayList<int[]> points){
+    /**
+     * adjust ratio comparing Participant board's size and Host board's size
+     * @param width participant's canvas width
+     * @param height participant's canvs height
+     * @param points points from Socket.IO participant as ArrayList<int[]> format
+     * @return return as ArrayList<int[]> format
+     */
+    private ArrayList<int[]> conversion(int width, int height, ArrayList<int[]> points){
         Rectangle r = this.getBounds();
         int boardWidth = r.width;
         int boardHeight = r.height;
@@ -74,26 +78,24 @@ public class TransparentBoard extends JFrame {
         int dataHeight = height;
         double widthRatio = boardWidth/dataWidth;
         double heightRatio = boardHeight/dataHeight;
-        ArrayList<Point> adjustPoints = new ArrayList<>();
-        Point adjustPoint;
+        ArrayList<int[]> adjustPoints = new ArrayList<>();
 
         for(int i=0; i<points.size(); i++){
             int[] coor = points.get(i);
             coor[0] = (int)( coor[0] * widthRatio );
             coor[1] = (int)( coor[1] * heightRatio );
-            adjustPoint = new Point(coor[0], coor[1]);
 
-            adjustPoints.add(adjustPoint);
+            adjustPoints.add(coor);
         }
 
         return adjustPoints;
     }
 
     public void draw(int width, int height, ArrayList<int[]> points) {
-        Point firstPointer = new Point(0, 0);
-        Point secondPointer = new Point(0, 0);
+        int[] firstPointer;
+        int[] secondPointer;
 
-        line = conversion(width, height, points);      // adjust ratio comparing Participant board's size and Host board's size
+        line = conversion(width, height, points);
 
         Graphics2D g = panel.getBufferedImage().createGraphics();
         g.setColor(customColor);
@@ -103,7 +105,7 @@ public class TransparentBoard extends JFrame {
 
         for (int i = 1; i < points.size(); i++) {
             secondPointer = line.get(i);
-            g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
+            g.drawLine(firstPointer[0], firstPointer[1], secondPointer[0], secondPointer[1]);
             firstPointer = secondPointer;
         }
 
