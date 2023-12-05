@@ -74,6 +74,13 @@ public class Server {
 
             drawing.draw(id, width, height, points, color);
 
+            System.out.println(width + ", " + height);
+            for(int i = 0; i < points.size(); i++){
+                int[] coor = points.get(i);
+                System.out.println(coor[0] + ", " + coor[1]);
+                System.out.println("hello");
+            }
+
             points.clear();
             ackRequest.sendAckData("received and drawed!");
         };
