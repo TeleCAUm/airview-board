@@ -57,60 +57,10 @@ public class TransparentBoard extends JFrame {
         buttonBox = new Box(BoxLayout.X_AXIS);
         buttonBox.add(toggleButton);
         buttonBox.add(buttonpanel.buttonPanel);
-        buttonBox.setBounds(100, 50, 1000 , 200);
+        buttonBox.setBounds((res.width/2)-500, 50, 1000 , 80);
         add(buttonBox);
         add(panel, BorderLayout.CENTER);
         setVisible(true);
-    }
-
-    /**
-     * adjust ratio comparing Participant board's size and Host board's size
-     * @param width participant's canvas width
-     * @param height participant's canvs height
-     * @param points points from Socket.IO participant as ArrayList<int[]> format
-     * @return return as ArrayList<int[]> format
-     */
-    private ArrayList<int[]> conversion(int width, int height, ArrayList<int[]> points){
-        Rectangle r = this.getBounds();
-        int boardWidth = r.width;
-        int boardHeight = r.height;
-        int dataWidth = width;
-        int dataHeight = height;
-        double widthRatio = boardWidth/dataWidth;
-        double heightRatio = boardHeight/dataHeight;
-        ArrayList<int[]> adjustPoints = new ArrayList<>();
-
-        for(int i=0; i<points.size(); i++){
-            int[] coor = points.get(i);
-            coor[0] = (int)( coor[0] * widthRatio );
-            coor[1] = (int)( coor[1] * heightRatio );
-
-            adjustPoints.add(coor);
-        }
-
-        return adjustPoints;
-    }
-
-    public void draw(int width, int height, ArrayList<int[]> points) {
-        int[] firstPointer;
-        int[] secondPointer;
-
-        line = conversion(width, height, points);
-
-        Graphics2D g = panel.getBufferedImage().createGraphics();
-        g.setColor(customColor);
-        g.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-        firstPointer = line.get(0);
-
-
-        for (int i = 1; i < points.size(); i++) {
-            secondPointer = line.get(i);
-            g.drawLine(firstPointer[0], firstPointer[1], secondPointer[0], secondPointer[1]);
-            firstPointer = secondPointer;
-        }
-
-        g.dispose();
-        repaint();
     }
 
     public void panelToggling() {

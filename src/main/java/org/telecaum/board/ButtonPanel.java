@@ -49,9 +49,9 @@ public class ButtonPanel implements ActionListener {
             }
         });
         setStrokSize = new JButton();
-        setStrokSize.setPreferredSize(new Dimension(40,20));
+        setStrokSize.setPreferredSize(new Dimension(20,20));
         eraseAll = new JButton();
-        eraseAll.setPreferredSize(new Dimension(40,20));
+        eraseAll.setPreferredSize(new Dimension(20,20));
 
 
         pen.addActionListener(this);
