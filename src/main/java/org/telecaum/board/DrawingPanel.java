@@ -6,9 +6,10 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 // 그림판 패널
 public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener {
-    private BufferedImage image;
+    public BufferedImage image;
     Point firstPointer = new Point(0, 0);
     Point secondPointer = new Point(0, 0);
     private Color customColor = new Color(0,0,0);
@@ -16,6 +17,11 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     public ArrayList<Line> lines = new ArrayList<>();
     ArrayList<int[]> temp = new ArrayList<>();
     boolean erase = false;
+    public void setLines(ArrayList<int[]> line, Color color, float stroke, int id){
+        System.out.println("inside of setLines");
+        lines.add(new Line(line, color, stroke, id));
+        redrawing();
+    }
 
     public DrawingPanel(){
         setLayout(new BorderLayout());
@@ -33,42 +39,17 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
         boolean isSelected;
         private Color color = new Color(0,0,0,255);
         private Float stroke = (float) 5;
+        private int id = 0;
 
-        public Line(ArrayList<int[]> temp, Color color, Float stroke) {
+        public Line(ArrayList<int[]> temp, Color color, Float stroke, int id) {
             this.multipleLine = temp;
             this.color = color;
             this.stroke = stroke;
             isSelected = false;
+            this.id = id;
         }
     }
 
-    /**
-     * adjust ratio comparing Participant board's size and Host board's size
-     * @param width participant's canvas width
-     * @param height participant's canvs height
-     * @param points points from Socket.IO participant as ArrayList<int[]> format
-     * @return return as ArrayList<int[]> format
-     */
-    private ArrayList<int[]> conversion(int width, int height, ArrayList<int[]> points){
-        Rectangle r = this.getBounds();
-        int boardWidth = r.width;
-        int boardHeight = r.height;
-        int dataWidth = width;
-        int dataHeight = height;
-        double widthRatio = boardWidth/dataWidth;
-        double heightRatio = boardHeight/dataHeight;
-        ArrayList<int[]> adjustPoints = new ArrayList<>();
-
-        for(int i=0; i<points.size(); i++){
-            int[] coor = points.get(i);
-            coor[0] = (int)( coor[0] * widthRatio );
-            coor[1] = (int)( coor[1] * heightRatio );
-
-            adjustPoints.add(coor);
-        }
-
-        return adjustPoints;
-    }
     public void redrawing(){
         Graphics2D g = image.createGraphics();
         // draw rest of lines
@@ -76,65 +57,22 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
         while (iterator.hasNext()) {
             Line line = iterator.next();
             g.setColor(line.color);
-            g.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+            g.setStroke(new BasicStroke(line.stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
 
-            if(!line.multipleLine.isEmpty()) {
-                int[] startpoint = line.multipleLine.get(0);
-                int[] endpoint;
-                for (int i = 1; i < line.multipleLine.size(); i++) {
-                    endpoint = line.multipleLine.get(i);
+            Iterator<int[]> iter2 = line.multipleLine.iterator();
+            while(iter2.hasNext()){
+                int[] startpoint = iter2.next();
+                int[] endpoint = null;
+                while(iter2.hasNext()) {
+                    endpoint = iter2.next();
                     g.drawLine(startpoint[0], startpoint[1], endpoint[0], endpoint[1]);
-                    firstPointer.x = secondPointer.x;
-                    firstPointer.y = secondPointer.y;
+                    startpoint = endpoint;
                 }
             }
+
+            repaint();
         }
-        repaint();
     }
-
-    public void draw(ArrayList<int[]> points) {
-        Point firstPointer = new Point(0, 0);
-        Point secondPointer = new Point(0, 0);
-
-        Graphics2D g = image.createGraphics();
-
-        g.setColor(customColor);
-        g.setStroke(new BasicStroke(stroke));
-        int[] first = points.get(0);
-        firstPointer.setLocation(first[0], first[1]);
-
-        for (int i = 1; i < points.size(); i++) {
-            int[] second = points.get(i);
-            secondPointer.setLocation(second[0], second[1]);
-            g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
-            System.out.println(firstPointer.x +", "+ firstPointer.y+" "+ secondPointer.x+" "+ secondPointer.y);
-            System.out.println("inside");
-            firstPointer.x = secondPointer.x;
-            firstPointer.y = secondPointer.y;
-        }
-
-        g.dispose();
-        repaint();
-    }
-//    public void draw() {
-//        int[] firstPointer;
-//        int[] secondPointer;
-//
-//        Graphics2D g = getBufferedImage().createGraphics();
-//        g.setColor(color);
-//        g.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-//        firstPointer = temp.get(0);
-//
-//
-//        for (int i = 1; i < points.size(); i++) {
-//            secondPointer = temp.get(i);
-//            g.drawLine(firstPointer[0], firstPointer[1], secondPointer[0], secondPointer[1]);
-//            firstPointer = secondPointer;
-//        }
-//
-//        g.dispose();
-//        repaint();
-//    }
 
     public void setImageBackground() {
         Dimension res = Toolkit.getDefaultToolkit().getScreenSize();
@@ -164,6 +102,20 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
             line.multipleLine.clear();
             iter.remove();
         }
+    }
+    public void eraseAll(int id){
+        System.out.println("inside of eraseAll");
+        Iterator<Line> iter = lines.iterator();
+        while(iter.hasNext()){
+            Line line = iter.next();
+            if(line.id == id) {
+                System.out.println("what the fucking happend here : " + line.id);
+                line.multipleLine.clear();
+                iter.remove();
+            }
+        }
+        clearCanvas();
+        redrawing();
     }
 
     /**
@@ -265,7 +217,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
                 if(isInside(line.multipleLine, e.getPoint()))
                     line.isSelected = true;
             }
-
             Iterator<Line> iterator2 = lines.iterator();
 
             while (iterator2.hasNext()) {
@@ -300,8 +251,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
             int[] coor = { secondPointer.x, secondPointer.y };
             temp.add(coor);
             ArrayList<int[]> line = new ArrayList<>(temp);
-            lines.add(new Line(line, customColor, stroke));
-
+            lines.add(new Line(line, customColor, stroke, 0));
             updatePaint();
             temp.clear();
         }

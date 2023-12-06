@@ -10,10 +10,7 @@ import org.telecaum.board.TransparentBoard;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
 
 public class Server {
 
@@ -21,10 +18,10 @@ public class Server {
     private SocketIOServer server;
     private TransparentBoard board;
     private DrawingPanel drawing;
+    int id = 1;
     public Server(TransparentBoard board, DrawingPanel drawing) {
         this.board = board;
         this.drawing = drawing;
-
         config = new Configuration();
 
         config.setHostname("127.0.0.1");
@@ -42,6 +39,13 @@ public class Server {
         server.start();
     }
 
+    /**
+     * adjust ratio comparing Participant board's size and Host board's size
+     * @param width participant's canvas width
+     * @param height participant's canvs height
+     * @param points points from Socket.IO participant as ArrayList<int[]> format
+     * @return return as ArrayList<int[]> format
+     */
     private ArrayList<int[]> conversion(int width, int height, ArrayList<int[]> points){
         Rectangle r = board.getBounds();
         int boardWidth = r.width;
@@ -65,21 +69,22 @@ public class Server {
 
     private DataListener<String> listenConversionDrawingEvent() {
         return (client, message, ackRequest) -> {
-            ArrayList<int[]> points = new ArrayList<>();
+            ArrayList<int[]> line = new ArrayList<>();
             Color color = new Color(0,0,0);
+            float stroke = (float) 5;
 
             JSONObject jo = new JSONObject(message);
             int width = jo.getInt("width");
             int height = jo.getInt("height");
-            JSONArray line = jo.getJSONArray("line");
+            JSONArray joline = jo.getJSONArray("line");
 //            JSONArray jsColor = jo.getJSONArray("color");
 
-            for (int i = 0; i < line.length(); i++) {
-                JSONObject point = line.getJSONObject(i);
+            for (int i = 0; i < joline.length(); i++) {
+                JSONObject point = joline.getJSONObject(i);
                 int x = point.getInt("x");
                 int y = point.getInt("y");
                 int[] coordinates = {x, y};
-                points.add(coordinates);
+                line.add(coordinates);
             }
 
 //            for(int i = 0; i < jsColor.length(); i++){
@@ -92,10 +97,11 @@ public class Server {
 //                int B = RGBA%100;
 //                color = new Color(R, G, B);
 //            }
-            conversion(width, height, points);
-            board.draw(points);
 
-            points.clear();
+//            conversion(width, height, line);
+//            board.draw(line);
+            drawing.setLines(line, color, stroke, id);
+            line.clear();
             ackRequest.sendAckData("received and drawed!");
         };
     }
