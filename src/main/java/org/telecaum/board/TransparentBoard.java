@@ -19,7 +19,6 @@ public class TransparentBoard extends JFrame {
     private Image onImg;
     private Image offImg;
     private JButton toggleButton;
-    private ArrayList<int[]> line;
 
     public TransparentBoard() {
         init();
@@ -62,6 +61,30 @@ public class TransparentBoard extends JFrame {
         add(panel, BorderLayout.CENTER);
         setVisible(true);
     }
+
+    public void draw(ArrayList<int[]> points) {
+        Point firstPointer = new Point(0, 0);
+        Point secondPointer = new Point(0, 0);
+
+        Graphics2D g = panel.getBufferedImage().createGraphics();
+
+        g.setColor(customColor);
+        g.setStroke(new BasicStroke(stroke));
+        int[] first = points.get(0);
+        firstPointer.setLocation(first[0], first[1]);
+
+        for (int i = 1; i < points.size(); i++) {
+            int[] second = points.get(i);
+            secondPointer.setLocation(second[0], second[1]);
+            g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
+            firstPointer.x = secondPointer.x;
+            firstPointer.y = secondPointer.y;
+        }
+
+        g.dispose();
+        repaint();
+    }
+
 
     public void panelToggling() {
         String os = System.getProperty("os.name").toLowerCase();

@@ -26,7 +26,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
     /**
      *      Save a single of lines through this logic, ArrayList< ArrayList<int[]> >
-     *      including color, stroke and isSelected infos
+     *      including color, stroke and isSelected information
      **/
     public class Line {
         ArrayList<int[]> multipleLine;
@@ -92,22 +92,25 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
         repaint();
     }
 
-    public void draw(int id, int width, int height, ArrayList<int[]> points, Color color) {
-        int[] firstPointer;
-        int[] secondPointer;
+    public void draw(ArrayList<int[]> points) {
+        Point firstPointer = new Point(0, 0);
+        Point secondPointer = new Point(0, 0);
 
-        temp = conversion(width, height, points);
+        Graphics2D g = image.createGraphics();
 
-        Graphics2D g = getBufferedImage().createGraphics();
-        g.setColor(color);
-        g.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-        firstPointer = temp.get(0);
-
+        g.setColor(customColor);
+        g.setStroke(new BasicStroke(stroke));
+        int[] first = points.get(0);
+        firstPointer.setLocation(first[0], first[1]);
 
         for (int i = 1; i < points.size(); i++) {
-            secondPointer = temp.get(i);
-            g.drawLine(firstPointer[0], firstPointer[1], secondPointer[0], secondPointer[1]);
-            firstPointer = secondPointer;
+            int[] second = points.get(i);
+            secondPointer.setLocation(second[0], second[1]);
+            g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
+            System.out.println(firstPointer.x +", "+ firstPointer.y+" "+ secondPointer.x+" "+ secondPointer.y);
+            System.out.println("inside");
+            firstPointer.x = secondPointer.x;
+            firstPointer.y = secondPointer.y;
         }
 
         g.dispose();
@@ -206,7 +209,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
                 endPoint = checkSeletectedLine.get(i);
                 double distnace = pointToLineDistance(startPoint[0],startPoint[1],endPoint[0],endPoint[1],p.x,p.y);
                 minimum = Math.min(minimum, distnace);
-                System.out.println(minimum);
                 startPoint = endPoint;
             }
 

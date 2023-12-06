@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.telecaum.board.DrawingPanel;
 import org.telecaum.board.TransparentBoard;
 
+import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class Server {
 
         config = new Configuration();
 
-        config.setHostname("192.168.1.171");
+        config.setHostname("127.0.0.1");
         config.setPort(5555);
         config.setOrigin("*");
 
@@ -41,17 +42,37 @@ public class Server {
         server.start();
     }
 
+    private ArrayList<int[]> conversion(int width, int height, ArrayList<int[]> points){
+        Rectangle r = board.getBounds();
+        int boardWidth = r.width;
+        int boardHeight = r.height;
+        int dataWidth = width;
+        int dataHeight = height;
+        double widthRatio = boardWidth/dataWidth;
+        double heightRatio = boardHeight/dataHeight;
+        ArrayList<int[]> adjustPoints = new ArrayList<>();
+
+        for(int i=0; i<points.size(); i++){
+            int[] coor = points.get(i);
+            coor[0] = (int)( coor[0] * widthRatio );
+            coor[1] = (int)( coor[1] * heightRatio );
+
+            adjustPoints.add(coor);
+        }
+
+        return adjustPoints;
+    }
+
     private DataListener<String> listenConversionDrawingEvent() {
         return (client, message, ackRequest) -> {
             ArrayList<int[]> points = new ArrayList<>();
             Color color = new Color(0,0,0);
 
             JSONObject jo = new JSONObject(message);
-            int id = jo.getInt("ID");
             int width = jo.getInt("width");
             int height = jo.getInt("height");
             JSONArray line = jo.getJSONArray("line");
-            JSONArray jsColor = jo.getJSONArray("color");
+//            JSONArray jsColor = jo.getJSONArray("color");
 
             for (int i = 0; i < line.length(); i++) {
                 JSONObject point = line.getJSONObject(i);
@@ -61,25 +82,18 @@ public class Server {
                 points.add(coordinates);
             }
 
-            for(int i = 0; i < jsColor.length(); i++){
-                JSONObject hexColor = jsColor.getJSONObject(i);
-                String hexWithHash = hexColor.getString("");
-                String numberOnly = hexWithHash.replaceAll("[^0-9]","");
-                int RGBA = Integer.parseInt(numberOnly);
-                int R = RGBA/10000;
-                int G = RGBA/100;
-                int B = RGBA%100;
-                color = new Color(R, G, B);
-            }
-
-            drawing.draw(id, width, height, points, color);
-
-            System.out.println(width + ", " + height);
-            for(int i = 0; i < points.size(); i++){
-                int[] coor = points.get(i);
-                System.out.println(coor[0] + ", " + coor[1]);
-                System.out.println("hello");
-            }
+//            for(int i = 0; i < jsColor.length(); i++){
+//                JSONObject hexColor = jsColor.getJSONObject(i);
+//                String hexWithHash = hexColor.getString("");
+//                String numberOnly = hexWithHash.replaceAll("[^0-9]","");
+//                int RGBA = Integer.parseInt(numberOnly);
+//                int R = RGBA/10000;
+//                int G = RGBA/100;
+//                int B = RGBA%100;
+//                color = new Color(R, G, B);
+//            }
+            conversion(width, height, points);
+            board.draw(points);
 
             points.clear();
             ackRequest.sendAckData("received and drawed!");
