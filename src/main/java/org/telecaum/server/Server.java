@@ -17,11 +17,8 @@ public class Server {
     private Configuration config;
     private SocketIOServer server;
     private TransparentBoard board;
-    private DrawingPanel drawing;
-    int id = 1;
-    public Server(TransparentBoard board, DrawingPanel drawing) {
+    public Server(TransparentBoard board) {
         this.board = board;
-        this.drawing = drawing;
         config = new Configuration();
 
         config.setHostname("127.0.0.1");
@@ -71,13 +68,16 @@ public class Server {
         return (client, message, ackRequest) -> {
             ArrayList<int[]> line = new ArrayList<>();
             Color color = new Color(0, 0, 0);
-            float stroke = (float) 30;
+            boolean erase = false;
 
             JSONObject jo = new JSONObject(message);
             int width = jo.getInt("width");
             int height = jo.getInt("height");
             JSONArray joline = jo.getJSONArray("line");
-//            JSONArray jsColor = jo.getJSONArray("color");
+            String jsColor = jo.getString("color");
+            float thickness = jo.getFloat("thickness");
+            String id = jo.getString("id");
+//            erase = jo.getBoolean("erase");
 
             for (int i = 0; i < joline.length(); i++) {
                 JSONObject point = joline.getJSONObject(i);
@@ -87,33 +87,14 @@ public class Server {
                 line.add(coordinates);
             }
 
-//            for(int i = 0; i < jsColor.length(); i++){
-//                JSONObject hexColor = jsColor.getJSONObject(i);
-//                String hexWithHash = hexColor.getString("");
-//                String numberOnly = hexWithHash.replaceAll("[^0-9]","");
-//                int RGBA = Integer.parseInt(numberOnly);
-//                int R = RGBA/10000;
-//                int G = RGBA/100;
-//                int B = RGBA%100;
-//                color = new Color(R, G, B);
-//            }
+            color = Color.decode(jsColor);
 
+            if(erase){
+                board.eraseAll(id);
+            }
             conversion(width, height, line);
-//            try{
-//                SwingUtilities.invokeAndWait(new Runnable(){
-//                    @Override
-//                    public void run() {
-//                        drawing.draw(line);
-//                        System.out.println("success!");
-//                    }
-//                });
-//            }catch(Exception e1){
-//                System.out.println("error?");
-//            }
-            board.draw(line,color,stroke);
-//            drawing.setLines(line, color, stroke, id);
-//            line.clear();
-//            board.test();
+            board.draw(line, color, thickness);
+            board.setData(line, color, thickness, id);
             ackRequest.sendAckData("received and drawed!");
         };
     }

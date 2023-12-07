@@ -7,19 +7,19 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Iterator;
 
 public class TransparentBoard extends JFrame {
     private boolean isVisible = true;
     private DrawingPanel panel;
     private ButtonPanel buttonpanel;
     private Box buttonBox;
-    private Color customColor;
-    private Float stroke;
     private ImageIcon onImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./ToggleOn.png")));
     private ImageIcon offImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./ToggleOff.png")));
     private Image onImg;
     private Image offImg;
     private JButton toggleButton;
+    public ArrayList<Line> lines = new ArrayList<>();
 
     public TransparentBoard() {
         init();
@@ -31,8 +31,6 @@ public class TransparentBoard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-//        customColor = new Color(0,0,0,255);
-//        stroke = (float) 5;
 
         setUndecorated(true);       // 프레임 투명도 설정
         setBackground(new Color(0, 0, 0, 0));
@@ -90,7 +88,7 @@ public class TransparentBoard extends JFrame {
         }
     }
 
-    public void draw(ArrayList<int[]> points,Color color, float stroke) {
+    public void draw(ArrayList<int[]> points, Color color, float stroke) {
         Point firstPointer = new Point(0, 0);
         Point secondPointer = new Point(0, 0);
 
@@ -112,7 +110,36 @@ public class TransparentBoard extends JFrame {
         g.dispose();
         repaint();
     }
-    public void test(){
+    public void setData(ArrayList<int[]> points, Color color, float stroke, String id){
+        lines.add(new Line(points, color, stroke, id));
+    }
+
+    public void eraseAll(String id){
+        Iterator<Line> iter = lines.iterator();
+        while(iter.hasNext()){
+            Line line = iter.next();
+            if(line.id == id) {
+                line.multipleLine.clear();
+                iter.remove();
+            }
+        }
         panel.clearCanvas();
+        repaint();
+    }
+
+    public class Line {
+        ArrayList<int[]> multipleLine;
+        boolean isSelected;
+        private Color color = new Color(0,0,0,255);
+        private Float stroke = (float) 5;
+        private String id = "";
+
+        public Line(ArrayList<int[]> temp, Color color, Float stroke, String id) {
+            this.multipleLine = temp;
+            this.color = color;
+            this.stroke = stroke;
+            isSelected = false;
+            this.id = id;
+        }
     }
 }
