@@ -111,9 +111,15 @@ public class Server {
 //                System.out.println("error?");
 //            }
             board.draw(line,color,stroke);
+            id++;
+            board.setData(line, color, stroke, 10);
 //            drawing.setLines(line, color, stroke, id);
 //            line.clear();
 //            board.test();
+            if(id==10){
+                System.out.println("more than 10 lines");
+                board.eraseAll();
+            }
             ackRequest.sendAckData("received and drawed!");
         };
     }

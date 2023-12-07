@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class TransparentBoard extends JFrame {
     private boolean isVisible = true;
@@ -19,6 +20,7 @@ public class TransparentBoard extends JFrame {
     private Image onImg;
     private Image offImg;
     private JButton toggleButton;
+    public ArrayList<Line> lines = new ArrayList<>();
 
     public TransparentBoard() {
         init();
@@ -111,6 +113,38 @@ public class TransparentBoard extends JFrame {
         g.dispose();
         repaint();
     }
+    public void setData(ArrayList<int[]> points, Color color, float stroke, int id){
+        lines.add(new Line(points, color, stroke, id));
+    }
+
+    public void eraseAll(){
+        Iterator<Line> iter = lines.iterator();
+        while(iter.hasNext()){
+            Line line = iter.next();
+            line.multipleLine.clear();
+            iter.remove();
+        }
+        System.out.println(lines.size());
+        panel.clearCanvas();
+        repaint();
+    }
+
+    public class Line {
+        ArrayList<int[]> multipleLine;
+        boolean isSelected;
+        private Color color = new Color(0,0,0,255);
+        private Float stroke = (float) 5;
+        private int id = 0;
+
+        public Line(ArrayList<int[]> temp, Color color, Float stroke, int id) {
+            this.multipleLine = temp;
+            this.color = color;
+            this.stroke = stroke;
+            isSelected = false;
+            this.id = id;
+        }
+    }
+
     public void test(){
         panel.clearCanvas();
     }
