@@ -11,6 +11,7 @@ import org.telecaum.board.TransparentBoard;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Server {
 
@@ -21,14 +22,16 @@ public class Server {
         this.board = board;
         config = new Configuration();
 
-        config.setHostname("127.0.0.1");
+        config.setHostname("10.210.60.54");
         config.setPort(5555);
         config.setOrigin("*");
 
         server = new SocketIOServer(config);
 
         server.addConnectListener(client -> System.out.println("Client connected: " + client.getSessionId()));
-        server.addDisconnectListener(client -> System.out.println("Client disconnected: " + client.getSessionId()));
+        server.addDisconnectListener(client -> {
+            board.eraseAll(client.getSessionId());
+        });
 
         // add some listeners
         server.addEventListener("send", String.class, listenConversionDrawingEvent());
@@ -49,14 +52,14 @@ public class Server {
         int boardHeight = r.height;
         int dataWidth = width;
         int dataHeight = height;
-        double widthRatio = boardWidth/dataWidth;
-        double heightRatio = boardHeight/dataHeight;
+        double widthRatio = (double)boardWidth/(double)dataWidth;
+        double heightRatio = (double)boardHeight/(double)dataHeight;
         ArrayList<int[]> adjustPoints = new ArrayList<>();
 
         for(int i=0; i<points.size(); i++){
             int[] coor = points.get(i);
-            coor[0] = (int)( coor[0] * widthRatio );
-            coor[1] = (int)( coor[1] * heightRatio );
+            coor[0] = (int) Math.round(coor[0] * widthRatio);
+            coor[1] = (int) Math.round(coor[1] * heightRatio);
 
             adjustPoints.add(coor);
         }
@@ -68,7 +71,6 @@ public class Server {
         return (client, message, ackRequest) -> {
             ArrayList<int[]> line = new ArrayList<>();
             Color color = new Color(0, 0, 0);
-            boolean erase = false;
 
             JSONObject jo = new JSONObject(message);
             int width = jo.getInt("width");
@@ -76,8 +78,6 @@ public class Server {
             JSONArray joline = jo.getJSONArray("line");
             String jsColor = jo.getString("color");
             float thickness = jo.getFloat("thickness");
-            String id = jo.getString("id");
-//            erase = jo.getBoolean("erase");
 
             for (int i = 0; i < joline.length(); i++) {
                 JSONObject point = joline.getJSONObject(i);
@@ -89,12 +89,10 @@ public class Server {
 
             color = Color.decode(jsColor);
 
-            if(erase){
-                board.eraseAll(id);
-            }
+
             conversion(width, height, line);
             board.draw(line, color, thickness);
-            board.setData(line, color, thickness, id);
+            board.setData(line, color, thickness, client.getSessionId());
             ackRequest.sendAckData("received and drawed!");
         };
     }

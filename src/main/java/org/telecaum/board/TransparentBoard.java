@@ -4,10 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Iterator;
+import java.util.UUID;
 
 public class TransparentBoard extends JFrame {
     private boolean isVisible = true;
@@ -56,12 +56,6 @@ public class TransparentBoard extends JFrame {
         buttonBox.add(toggleButton);
         buttonBox.add(buttonpanel.buttonPanel);
         buttonBox.setBounds((res.width/2)-400, 50, 730 , 80);
-        JButton pen = new JButton();
-        pen.setIcon(new ImageIcon("PenOn.png"));
-        Box penBox = new Box(BoxLayout.X_AXIS);
-        penBox.add(pen);
-        penBox.setBounds(500,500,500,500);
-        add(penBox);
         add(buttonBox);
         add(panel, BorderLayout.CENTER);
         setVisible(true);
@@ -110,11 +104,11 @@ public class TransparentBoard extends JFrame {
         g.dispose();
         repaint();
     }
-    public void setData(ArrayList<int[]> points, Color color, float stroke, String id){
+    public void setData(ArrayList<int[]> points, Color color, float stroke, UUID id){
         lines.add(new Line(points, color, stroke, id));
     }
 
-    public void eraseAll(String id){
+    public void eraseAll(UUID id){
         Iterator<Line> iter = lines.iterator();
         while(iter.hasNext()){
             Line line = iter.next();
@@ -132,9 +126,9 @@ public class TransparentBoard extends JFrame {
         boolean isSelected;
         private Color color = new Color(0,0,0,255);
         private Float stroke = (float) 5;
-        private String id = "";
+        private UUID id;
 
-        public Line(ArrayList<int[]> temp, Color color, Float stroke, String id) {
+        public Line(ArrayList<int[]> temp, Color color, Float stroke, UUID id) {
             this.multipleLine = temp;
             this.color = color;
             this.stroke = stroke;
