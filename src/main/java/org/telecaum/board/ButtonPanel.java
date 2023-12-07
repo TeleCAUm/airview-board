@@ -7,6 +7,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class ButtonPanel implements ActionListener {
     public JButton pen;
@@ -19,20 +20,17 @@ public class ButtonPanel implements ActionListener {
     DrawingPanel drawingPanel;
     private Color[] colors;
     private JButton[] colorButtons;
-    private ImageIcon penOnImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/PenOn.png");
-    private ImageIcon penOffImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/PenOff.png");
-    private Image penOnImg;
-    private Image penOffImg;
-    private ImageIcon eraseOnImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/EraseOn.png");
-    private ImageIcon eraseOffImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/EraseOff.png");
-    private Image eraseOnImg;
-    private Image eraseOffImg;
-    private ImageIcon deleteOnImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/DeleteOn.png");
-    private Image deleteOnImg;
+    private ImageIcon penOnImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./PenOn.png")));
+    private ImageIcon penOffImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./PenOff.png")));
+    private ImageIcon eraseOnImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./EraseOn.png")));
+    private ImageIcon eraseOffImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./EraseOff.png")));
+    private ImageIcon deleteOnImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./DeleteOn.png")));
+
+    private Image penOnImg, penOffImg, eraseOnImg, eraseOffImg, deleteOnImg;
     boolean flag = true;
     public ButtonPanel(DrawingPanel drawingPanel) {
         this.drawingPanel = drawingPanel;
-        buttonPanel = new JPanel(new GridLayout(1, 0));
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         Image penOnImgIconImage = penOnImgIcon.getImage();
         penOnImg = penOnImgIconImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
@@ -60,6 +58,17 @@ public class ButtonPanel implements ActionListener {
                 new Color(155, 255, 139),
                 new Color(139, 255, 206)
         };
+
+        for (int i = 0; i < colors.length; i++) {
+            colorButtons[i] = new JButton();
+            colorButtons[i].setBackground(colors[i]);
+            colorButtons[i].setOpaque(true); // Make sure the color shows up
+            colorButtons[i].setBorderPainted(false); // Optional, for better visual appearance
+            colorButtons[i].setPreferredSize(new Dimension(30, 30));
+            colorButtons[i].addActionListener(this);
+            buttonPanel.add(colorButtons[i]); // Add button to the panel
+        }
+
         strokeSlider = new JSlider(JSlider.HORIZONTAL, 5, 30, 5);
         strokeSlider.setMajorTickSpacing(5);
         strokeSlider.setPaintTicks(true);
@@ -79,15 +88,6 @@ public class ButtonPanel implements ActionListener {
         pen.addActionListener(this);
         erase.addActionListener(this);
         changeColor.addActionListener(this);
-        for (int i = 0; i < colors.length; i++) {
-            final int index = i;
-            colorButtons[i] = new JButton();
-            colorButtons[i].setBackground(colors[i]);
-            colorButtons[i].setPreferredSize(new Dimension(30, 30));
-            colorButtons[i].setFocusPainted(false);
-            changeColor.add(colorButtons[i]);
-            colorButtons[i].addActionListener(this);
-        }
         setStrokSize.addActionListener(this);
         eraseAll.addActionListener(this);
 
