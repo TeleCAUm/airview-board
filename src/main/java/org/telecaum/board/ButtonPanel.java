@@ -1,6 +1,7 @@
 package org.telecaum.board;
 
 import javax.swing.*;
+import javax.swing.ImageIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -18,14 +19,35 @@ public class ButtonPanel implements ActionListener {
     DrawingPanel drawingPanel;
     private Color[] colors;
     private JButton[] colorButtons;
+    private ImageIcon penOnImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/PenOn.png");
+    private ImageIcon penOffImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/PenOff.png");
+    private Image penOnImg;
+    private Image penOffImg;
+    private ImageIcon eraseOnImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/EraseOn.png");
+    private ImageIcon eraseOffImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/EraseOff.png");
+    private Image eraseOnImg;
+    private Image eraseOffImg;
+    private ImageIcon deleteOnImgIcon = new ImageIcon("/Users/jungfrau/Downloads/Socket/Server_main/airview-board/src/main/java/org/telecaum/board/DeleteOn.png");
+    private Image deleteOnImg;
     boolean flag = true;
     public ButtonPanel(DrawingPanel drawingPanel) {
         this.drawingPanel = drawingPanel;
         buttonPanel = new JPanel(new GridLayout(1, 0));
 
-        pen = new JButton();
-        pen.setPreferredSize(new Dimension(40,20));
-        erase = new JButton();
+        Image penOnImgIconImage = penOnImgIcon.getImage();
+        penOnImg = penOnImgIconImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+        Image penOffImgIconImage = penOffImgIcon.getImage();
+        penOffImg = penOffImgIconImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+        Image eraseOnImgIconImage = eraseOnImgIcon.getImage();
+        eraseOnImg = eraseOnImgIconImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+        Image eraseOffImgIconImage = eraseOffImgIcon.getImage();
+        eraseOffImg = eraseOffImgIconImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+        Image deleteOnImgIconImage = deleteOnImgIcon.getImage();
+        deleteOnImg = deleteOnImgIconImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+
+        pen = new JButton(new ImageIcon(penOnImg));
+        pen.setPreferredSize(new Dimension(40,40));
+        erase = new JButton(new ImageIcon(eraseOnImg));
         erase.setPreferredSize(new Dimension(40,20));
         changeColor = new JButton();
         changeColor.setPreferredSize(new Dimension(40,20));
@@ -50,7 +72,7 @@ public class ButtonPanel implements ActionListener {
         });
         setStrokSize = new JButton();
         setStrokSize.setPreferredSize(new Dimension(20,20));
-        eraseAll = new JButton();
+        eraseAll = new JButton(new ImageIcon(deleteOnImg));
         eraseAll.setPreferredSize(new Dimension(20,20));
 
 
@@ -91,13 +113,9 @@ public class ButtonPanel implements ActionListener {
         colors.add(Box.createHorizontalGlue());
 
         Box b2 = Box.createHorizontalBox();
-        b2.add(Box.createHorizontalGlue());
         b2.add(pen);
-        b2.add(Box.createHorizontalGlue());
         Box b3 = Box.createHorizontalBox();
-        b3.add(Box.createHorizontalGlue());
         b3.add(erase);
-        b3.add(Box.createHorizontalGlue());
         Box b4 = Box.createHorizontalBox();
         b4.add(Box.createHorizontalGlue());
         b4.add(colors);
@@ -120,9 +138,15 @@ public class ButtonPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(pen)) {
             Color black = new Color(0,0,0,255);
+            pen.setIcon(new ImageIcon(penOffImg));
+            erase.setIcon(new ImageIcon(eraseOnImg));
+            eraseAll.setIcon(new ImageIcon(deleteOnImg));
             drawingPanel.changeColor(black);
             drawingPanel.changeToErase(false);
         } else if (e.getSource().equals(erase)) {
+            pen.setIcon(new ImageIcon(penOnImg));
+            erase.setIcon(new ImageIcon(eraseOffImg));
+            eraseAll.setIcon(new ImageIcon(deleteOnImg));
             drawingPanel.changeToErase(true);
         } else if (e.getSource().equals(setStrokSize)) {
             if(!flag){
@@ -136,6 +160,8 @@ public class ButtonPanel implements ActionListener {
                 flag = false;
             }
         } else if (e.getSource().equals(eraseAll)) {
+            pen.setIcon(new ImageIcon(penOnImg));
+            erase.setIcon(new ImageIcon(eraseOnImg));
             drawingPanel.eraseAll();
             drawingPanel.setImageBackground();
             drawingPanel.repaint();

@@ -70,8 +70,8 @@ public class Server {
     private DataListener<String> listenConversionDrawingEvent() {
         return (client, message, ackRequest) -> {
             ArrayList<int[]> line = new ArrayList<>();
-            Color color = new Color(0,0,0);
-            float stroke = (float) 5;
+            Color color = new Color(0, 0, 0);
+            float stroke = (float) 30;
 
             JSONObject jo = new JSONObject(message);
             int width = jo.getInt("width");
@@ -98,10 +98,22 @@ public class Server {
 //                color = new Color(R, G, B);
 //            }
 
-//            conversion(width, height, line);
-//            board.draw(line);
-            drawing.setLines(line, color, stroke, id);
-            line.clear();
+            conversion(width, height, line);
+//            try{
+//                SwingUtilities.invokeAndWait(new Runnable(){
+//                    @Override
+//                    public void run() {
+//                        drawing.draw(line);
+//                        System.out.println("success!");
+//                    }
+//                });
+//            }catch(Exception e1){
+//                System.out.println("error?");
+//            }
+            board.draw(line,color,stroke);
+//            drawing.setLines(line, color, stroke, id);
+//            line.clear();
+//            board.test();
             ackRequest.sendAckData("received and drawed!");
         };
     }

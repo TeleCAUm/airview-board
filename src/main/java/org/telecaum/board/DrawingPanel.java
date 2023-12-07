@@ -1,5 +1,9 @@
 package org.telecaum.board;
 
+import com.corundumstudio.socketio.listener.DataListener;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -18,9 +22,8 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
     ArrayList<int[]> temp = new ArrayList<>();
     boolean erase = false;
     public void setLines(ArrayList<int[]> line, Color color, float stroke, int id){
-        System.out.println("inside of setLines");
         lines.add(new Line(line, color, stroke, id));
-        redrawing();
+        repaint();
     }
 
     public DrawingPanel(){
@@ -28,6 +31,28 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
         setImageBackground();
         addMouseListener(this);
         addMouseMotionListener(this);
+    }
+
+    public void draw(ArrayList<int[]> points) {
+        Point firstPointer = new Point(0, 0);
+        Point secondPointer = new Point(0, 0);
+
+        Graphics2D g = image.createGraphics();
+
+        g.setColor(customColor);
+        g.setStroke(new BasicStroke(stroke));
+        int[] first = points.get(0);
+        firstPointer.setLocation(first[0], first[1]);
+
+        for (int i = 1; i < points.size(); i++) {
+            int[] second = points.get(i);
+            secondPointer.setLocation(second[0], second[1]);
+            g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
+            firstPointer.x = secondPointer.x;
+            firstPointer.y = secondPointer.y;
+        }
+        g.dispose();
+        repaint();
     }
 
     /**
@@ -52,7 +77,6 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
 
     public void redrawing(){
         Graphics2D g = image.createGraphics();
-        // draw rest of lines
         Iterator<Line> iterator = lines.iterator();
         while (iterator.hasNext()) {
             Line line = iterator.next();
@@ -89,7 +113,7 @@ public class DrawingPanel extends JPanel implements MouseListener, MouseMotionLi
      * so that need to paint for every single line
      * @param g the <code>Graphics</code> object to protect
      */
-    protected void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(image, 0, 0, null);
     }

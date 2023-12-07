@@ -30,8 +30,8 @@ public class TransparentBoard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        customColor = new Color(0,0,0,255);
-        stroke = (float) 5;
+//        customColor = new Color(0,0,0,255);
+//        stroke = (float) 5;
 
         setUndecorated(true);       // 프레임 투명도 설정
         setBackground(new Color(0, 0, 0, 0));
@@ -56,35 +56,17 @@ public class TransparentBoard extends JFrame {
         buttonBox = new Box(BoxLayout.X_AXIS);
         buttonBox.add(toggleButton);
         buttonBox.add(buttonpanel.buttonPanel);
-        buttonBox.setBounds((res.width/2)-500, 50, 1000 , 80);
+        buttonBox.setBounds((res.width/2)-500, 50, 800 , 80);
+        JButton pen = new JButton();
+        pen.setIcon(new ImageIcon("PenOn.png"));
+        Box penBox = new Box(BoxLayout.X_AXIS);
+        penBox.add(pen);
+        penBox.setBounds(500,500,500,500);
+        add(penBox);
         add(buttonBox);
         add(panel, BorderLayout.CENTER);
         setVisible(true);
     }
-
-    public void draw(ArrayList<int[]> points) {
-        Point firstPointer = new Point(0, 0);
-        Point secondPointer = new Point(0, 0);
-
-        Graphics2D g = panel.getBufferedImage().createGraphics();
-
-        g.setColor(customColor);
-        g.setStroke(new BasicStroke(stroke));
-        int[] first = points.get(0);
-        firstPointer.setLocation(first[0], first[1]);
-
-        for (int i = 1; i < points.size(); i++) {
-            int[] second = points.get(i);
-            secondPointer.setLocation(second[0], second[1]);
-            g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
-            firstPointer.x = secondPointer.x;
-            firstPointer.y = secondPointer.y;
-        }
-
-        g.dispose();
-        repaint();
-    }
-
 
     public void panelToggling() {
         String os = System.getProperty("os.name").toLowerCase();
@@ -105,5 +87,31 @@ public class TransparentBoard extends JFrame {
             revalidate();
             repaint();
         }
+    }
+
+    public void draw(ArrayList<int[]> points,Color color, float stroke) {
+        Point firstPointer = new Point(0, 0);
+        Point secondPointer = new Point(0, 0);
+
+        Graphics2D g = panel.getBufferedImage().createGraphics();
+
+        g.setColor(color);
+        g.setStroke(new BasicStroke(stroke));
+        int[] first = points.get(0);
+        firstPointer.setLocation(first[0], first[1]);
+
+        for (int i = 1; i < points.size(); i++) {
+            int[] second = points.get(i);
+            secondPointer.setLocation(second[0], second[1]);
+            g.drawLine(firstPointer.x, firstPointer.y, secondPointer.x, secondPointer.y);
+            firstPointer.x = secondPointer.x;
+            firstPointer.y = secondPointer.y;
+        }
+
+        g.dispose();
+        repaint();
+    }
+    public void test(){
+        panel.clearCanvas();
     }
 }
