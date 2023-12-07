@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class TransparentBoard extends JFrame {
     private boolean isVisible = true;
@@ -14,8 +15,8 @@ public class TransparentBoard extends JFrame {
     private Box buttonBox;
     private Color customColor;
     private Float stroke;
-    private ImageIcon onImgIcon = new ImageIcon("./img/on.png");
-    private ImageIcon offImgIcon = new ImageIcon("./img/off.png");
+    private ImageIcon onImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./ToggleOn.png")));
+    private ImageIcon offImgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("./ToggleOff.png")));
     private Image onImg;
     private Image offImg;
     private JButton toggleButton;
@@ -41,12 +42,12 @@ public class TransparentBoard extends JFrame {
         panel.setOpaque(false);  // 패널 투명도 설정
 
         Image onOriginal = onImgIcon.getImage();
-        onImg = onOriginal.getScaledInstance(40, 20, Image.SCALE_SMOOTH);
+        onImg = onOriginal.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
         Image offOriginal = offImgIcon.getImage();
-        offImg = offOriginal.getScaledInstance(40, 20, Image.SCALE_SMOOTH);
+        offImg = offOriginal.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
 
         toggleButton = new JButton(new ImageIcon(onImg));
-        toggleButton.setPreferredSize(new Dimension(40, 20));
+        toggleButton.setPreferredSize(new Dimension(60, 60));
         toggleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -56,7 +57,7 @@ public class TransparentBoard extends JFrame {
         buttonBox = new Box(BoxLayout.X_AXIS);
         buttonBox.add(toggleButton);
         buttonBox.add(buttonpanel.buttonPanel);
-        buttonBox.setBounds(50, 50, 1000 , 80);
+        buttonBox.setBounds((res.width/2)-400, 50, 730 , 80);
         JButton pen = new JButton();
         pen.setIcon(new ImageIcon("PenOn.png"));
         Box penBox = new Box(BoxLayout.X_AXIS);

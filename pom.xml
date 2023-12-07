@@ -27,4 +27,22 @@
         </dependency>
     </dependencies>
 
+
+    <build>
+        <resources>
+            <!-- Custom icon resource folder -->
+            <resource>
+                <directory>src/main/resources/icons</directory>
+                <targetPath>${project.build.outputDirectory}/org/telecaum/board</targetPath>
+                <includes>
+                    <include>*.png</include>
+                    <include>*.jpg</include>
+                    <include>*.gif</include>
+                    <!-- Add other image formats as needed -->
+                </includes>
+            </resource>
+        </resources>
+
+        <!-- ... other build configurations ... -->
+    </build>
 </project>
