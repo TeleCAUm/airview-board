@@ -70,7 +70,7 @@ public class ButtonPanel implements ActionListener {
                 drawingPanel.repaint();
             }
         });
-        setStrokSize = new JButton();
+        setStrokSize = new JButton("선 굵기");
         setStrokSize.setPreferredSize(new Dimension(20,20));
         eraseAll = new JButton(new ImageIcon(deleteOnImg));
         eraseAll.setPreferredSize(new Dimension(20,20));

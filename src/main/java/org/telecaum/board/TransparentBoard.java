@@ -56,7 +56,7 @@ public class TransparentBoard extends JFrame {
         buttonBox = new Box(BoxLayout.X_AXIS);
         buttonBox.add(toggleButton);
         buttonBox.add(buttonpanel.buttonPanel);
-        buttonBox.setBounds((res.width/2)-500, 50, 800 , 80);
+        buttonBox.setBounds(50, 50, 1000 , 80);
         JButton pen = new JButton();
         pen.setIcon(new ImageIcon("PenOn.png"));
         Box penBox = new Box(BoxLayout.X_AXIS);
