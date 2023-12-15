@@ -55,7 +55,7 @@ public class TransparentBoard extends JFrame {
         buttonBox = new Box(BoxLayout.X_AXIS);
         buttonBox.add(toggleButton);
         buttonBox.add(buttonpanel.buttonPanel);
-        buttonBox.setBounds((res.width/2)-400, 50, 730 , 80);
+        buttonBox.setBounds((res.width/2)-400, 50, 800 , 80);
         add(buttonBox);
         add(panel, BorderLayout.CENTER);
         setVisible(true);
