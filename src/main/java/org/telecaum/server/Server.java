@@ -22,7 +22,7 @@ public class Server {
         this.board = board;
         config = new Configuration();
 
-        config.setHostname("10.210.60.54");
+        config.setHostname("0.0.0.0");
         config.setPort(5555);
         config.setOrigin("*");
 
