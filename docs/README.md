@@ -12,7 +12,6 @@ AirView is a screen-sharing platform that supports the following features.
 - __Quick Screen Switching__: Switch screens ridply when you want to see multiple users' screens at a glance or focus on one selected screen.
 - __Drawing__: Draw on the screens when you want to provide feedback.
 <br/>
-----
 
 # Initial setup
 ## Screen Sharing
@@ -46,8 +45,7 @@ Close the toggle to stop receiving feedback.
 <br/>
 _On OSX, the window will be minimized._
 ## Get Feedback
-Use the drawing menu to give feedback from **Participant** to **Host**
+- Use the drawing menu to give feedback from **Participant** to **Host**
 ![Feedback1](./Feedback1.png)
-<br/>
-The Host's screen can receive feedback through the airview-board.
+- The Host's screen can receive feedback through the airview-board.
 ![Feedback2](./Feedback2.png)
